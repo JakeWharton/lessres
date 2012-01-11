@@ -82,12 +82,12 @@
     actionModeStyle: reference
 
 ~SherlockActionBar:
-    //enums get bitwise values by default
+    //Enums get bitwise values by default
     displayOptions: showHome, homeAsUp, showTitle
-    //but you can also explicitly declare values
+    //You can also explicitly declare values
     navigationMode:
         standard: 0x01
-        list    : 0x02
+        list    : 0x08
         tabs    : 0x04
 
 
@@ -114,12 +114,16 @@ MyTheme:
         displayOptions: showHome|homeAsUp
         .actionheight
 
+        //Use tabs on large devices
         navigationMode      : list
         navigationMode-large: tabs
   
     actionModeStyle:
         background: @drawable/action_mode
         .actionheight
+
+    buttonStyle:
+        background: @drawable/my_button
 </pre>
 					</div>
 					<div class="span7">
@@ -138,20 +142,25 @@ MyTheme:
     &lt;/attr>
     &lt;attr name="navigationMode">
       &lt;item name="standard" value="1"/>
-      &lt;item name="list" value="2"/>
+      &lt;item name="list" value="8"/>
       &lt;item name="tabs" value="4"/>
     &lt;/attr>
   &lt;/declare-styleable>
+
 
   &lt;color name="primary_color">#ffa36e2b&lt;/color>
   &lt;color name="secondary_color">#ff9adb51&lt;/color>
   &lt;dimen name="height">60dp&lt;/dimen>
 
+
   &lt;style name="MyTheme" parent="android:Theme.Light">
-    &lt;item name="android:textColorPrimary">@color/primary_color&lt;/item>
-    &lt;item name="android:textColorSecondary">@color/secondary_color&lt;/item>
     &lt;item name="actionBarStyle">@style/MyTheme_actionBarStyle&lt;/item>
     &lt;item name="actionModeStyle">@style/MyTheme_actionModeStyle&lt;/item>
+
+    &lt;!-- Attributes not in declares so assume android namespace -->
+    &lt;item name="android:textColorPrimary">@color/primary_color&lt;/item>
+    &lt;item name="android:textColorSecondary">@color/secondary_color&lt;/item>
+    &lt;item name="android:buttonStyle">@style/MyTheme_buttonStyle&lt;/item>
   &lt;/style>
 
   &lt;style name="MyTheme_actionBarStyle" parent="android:Widget">
@@ -162,6 +171,11 @@ MyTheme:
   &lt;style name="MyTheme_actionModeStyle" parent="android:Widget">
     &lt;item name="android:background">@drawable/bg_action_mode&lt;/item>
     &lt;item name="android:height">@dimen/height&lt;/item>
+  &lt;/style>
+
+  &lt;!-- Automatically inherits from parent theme style -->
+  &lt;style name="MyTheme_buttonStyle" parent="android:Widget.Button">
+    &lt;item name="android:background">@drawable/my_button&lt;/item>
   &lt;/style>
 &lt;/resources>
 
@@ -176,11 +190,19 @@ MyTheme:
 
 &lt;!-- values-v11/lessres.xml -->
 &lt;resources>
-    &lt;style name="MyTheme" parent="android:Theme.Holo.Light">
-    &lt;item name="android:textColorPrimary">@color/primary_color&lt;/item>
-    &lt;item name="android:textColorSecondary">@color/secondary_color&lt;/item>
+  &lt;style name="MyTheme" parent="android:Theme.Holo.Light">
     &lt;item name="actionBarStyle">@style/MyTheme_actionBarStyle&lt;/item>
     &lt;item name="actionModeStyle">@style/MyTheme_actionModeStyle&lt;/item>
+
+    &lt;!-- Attributes not in declares so assume android namespace -->
+    &lt;item name="android:textColorPrimary">@color/primary_color&lt;/item>
+    &lt;item name="android:textColorSecondary">@color/secondary_color&lt;/item>
+    &lt;item name="android:buttonStyle">@style/MyTheme_buttonStyle&lt;/item>
+  &lt;/style>
+
+  &lt;!-- Automatically inherits from parent theme style -->
+  &lt;style name="MyTheme_buttonStyle" parent="android:Widget.Holo.Button">
+    &lt;item name="android:background">@drawable/my_button&lt;/item>
   &lt;/style>
 &lt;/resources>
 </pre>
