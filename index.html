@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>LessRes Concept</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+		<!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+		<link href="bootstrap.min.css" rel="stylesheet">
+		<link href="prettify.css" rel="stylesheet">
+		<style type="text/css">
+			body {
+				padding-top: 50px;
+				background: #f0f0f0 url('groovepaper.png') repeat;
+			}
+			header {
+				padding-bottom: 14px;
+				margin-bottom: 45px;
+				border-bottom: 3px solid #e5e5e5;
+			}
+			header h1, header p {
+				margin-right: 0;
+				font-size: 25px;
+			}
+			header h1 {
+				font-size: 45px;
+				margin-bottom: 15px;
+			}
+			.page-header {
+				margin-bottom: 15px;
+			}
+			section {
+				margin-bottom: 40px;
+				maring-top: 40px;
+			}
+			footer {
+				margin-top: 40px;
+				border-top: 1px solid #e5e5e5;
+				padding: 30px 0;
+			}
+			footer a {
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<header>
+				<h1>LessRes</h1>
+				<p>Work-in-progress concept of a LESS-style DSL for generating Android resources</p>
+			</header>
+			<section id="motivation">
+				<div class="page-header">
+					<h2>Motivation <small>The resoning behind why I think something like this is needed</small></h2>
+				</div>
+				<div class="row">
+					<div class="span12">
+						<p>Android theming and styling is an extremely powerful tool when used correctly. However, complex applications can have hundreds of styles scattered throughout tens of resource folders. When altering or debugging these styles it is sometime not always clear where problems are originating.</p>
+						<p>Cascading style sheets suffer from the same problem and there has been numerous movements over the last few years to attempt to solve this problem. One of the most popular frameworks, LESS, uses a simple, hierarchical DSL while adding new features such as constants and mixins.</p>
+						<p>By taking a cue from LESS it <em>should</em> be possible to create a more terse DSL which would allow for more effective style management on Android. This file would be parsed at build-time and converted into its respective set of resource folders and files.</p>
+						<p>Currently this is only being developed as a concept for possible future implementation. Android styling is much more complex than CSS (having things such as inheritance and namespaces) so much care will need to be taken to develop the DSL to be both powerful yet simple to understand and create.</p>
+					</div>
+				</div>
+			</section>
+			<section id="example">
+				<div class="page-header">
+					<h2>Example <small>Short sample of what an implementation would look like and its output</small></h2>
+				</div>
+				<div class="row">
+					<div class="span5">
+						<h6>Input</h6>
+						<pre class="prettyprint">//Declaring styles
+~SherlockTheme:
+    actionBarStyle : reference
+    actionModeStyle: reference
+
+~SherlockActionBar:
+    //enums get bitwise values by default
+    displayOptions: showHome, homeAsUp, showTitle
+    //but you can also explicitly declare values
+    navigationMode:
+        standard: 0x01
+        list    : 0x02
+        tabs    : 0x04
+
+
+//Constants are converted to resources as well
+@primary_color: #ffa36e2b
+@secondary_color: #ff9adb51
+@height: 60dp
+
+
+//Mixin to add height to a style
+.actionheight:
+    height: @height
+
+
+MyTheme:
+    //Specify the parent on pre/post API 11
+    ^     Theme.Light
+    ^-v11 Theme.Holo.Light
+
+    textColorPrimary:   @primary_color
+    textColorSecondary: @secondary_color
+
+    actionBarStyle:
+        displayOptions: showHome|homeAsUp
+        .actionheight
+
+        navigationMode      : list
+        navigationMode-large: tabs
+  
+    actionModeStyle:
+        background: @drawable/action_mode
+        .actionheight
+</pre>
+					</div>
+					<div class="span7">
+						<h6>Output</h6>
+						<pre class="prettyprint">&lt;!-- values/lessres.xml -->
+&lt;resources>
+  &lt;declare-styleable name="SherlockTheme">
+    &lt;attr name="actionBarStyle" format="reference" />
+    &lt;attr name="actionModeStyle" format="reference" />
+  &lt;/declare-styleable>
+  &lt;declare-styleable name="SherlockActionBar">
+    &lt;attr name="displayOptions">
+      &lt;item name="showHome" value="1"/>
+      &lt;item name="homeAsUp" value="2"/>
+      &lt;item name="showTitle" value="4"/>
+    &lt;/attr>
+    &lt;attr name="navigationMode">
+      &lt;item name="standard" value="1"/>
+      &lt;item name="list" value="2"/>
+      &lt;item name="tabs" value="4"/>
+    &lt;/attr>
+  &lt;/declare-styleable>
+
+  &lt;color name="primary_color">#ffa36e2b&lt;/color>
+  &lt;color name="secondary_color">#ff9adb51&lt;/color>
+  &lt;dimen name="height">60dp&lt;/dimen>
+
+  &lt;style name="MyTheme" parent="android:Theme.Light">
+    &lt;item name="android:textColorPrimary">@color/primary_color&lt;/item>
+    &lt;item name="android:textColorSecondary">@color/secondary_color&lt;/item>
+    &lt;item name="actionBarStyle">@style/MyTheme_actionBarStyle&lt;/item>
+    &lt;item name="actionModeStyle">@style/MyTheme_actionModeStyle&lt;/item>
+  &lt;/style>
+
+  &lt;style name="MyTheme_actionBarStyle" parent="android:Widget">
+    &lt;item name="displayOptions">showHome|homeAsUp&lt;/item>
+    &lt;item name="android:height">@dimen/height&lt;/item>
+    &lt;item name="navigationMode">list&lt;/item>
+  &lt;/style>
+  &lt;style name="MyTheme_actionModeStyle" parent="android:Widget">
+    &lt;item name="android:background">@drawable/bg_action_mode&lt;/item>
+    &lt;item name="android:height">@dimen/height&lt;/item>
+  &lt;/style>
+&lt;/resources>
+
+&lt;!-- values-large/lessres.xml -->
+&lt;resources>
+  &lt;style name="MyTheme_actionBarStyle" parent="android:Widget">
+    &lt;item name="displayOptions">showHome|homeAsUp|showTitle&lt;/item>
+    &lt;item name="android:height">@dimen/height&lt;/item>
+    &lt;item name="navigationMode">tabs&lt;/item>
+  &lt;/style>
+&lt;/resources>
+
+&lt;!-- values-v11/lessres.xml -->
+&lt;resources>
+    &lt;style name="MyTheme" parent="android:Theme.Holo.Light">
+    &lt;item name="android:textColorPrimary">@color/primary_color&lt;/item>
+    &lt;item name="android:textColorSecondary">@color/secondary_color&lt;/item>
+    &lt;item name="actionBarStyle">@style/MyTheme_actionBarStyle&lt;/item>
+    &lt;item name="actionModeStyle">@style/MyTheme_actionModeStyle&lt;/item>
+  &lt;/style>
+&lt;/resources>
+</pre>
+					</div>
+				</div>
+			</section>
+
+			<footer>
+				<p>&copy; 2012 Jake Wharton &mdash; <a href="http://twitter.com/JakeWharton">@</a> / <a href="http://profiles.google.com/jakewharton">+</a></p>
+			</footer>
+		</div>
+
+		<script src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
+		<script src="prettify.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				prettyPrint();
+			});
+		</script>
+	</body>
+</html>
