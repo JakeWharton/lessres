@@ -209,6 +209,21 @@ MyTheme:
 					</div>
 				</div>
 			</section>
+			<section id="comments">
+				<div class="row">
+					<div class="span12">
+						<div class="page-header">
+							<h2>Comments <small>Discuss the potential advantages, disadvantages, and problems with this proposal</small></h2>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="span10 offset1">
+						<noscript><p>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></p></noscript>
+						<div id="disqus_thread"></div>
+					</div>
+				</div>
+			</section>
 
 			<footer>
 				<p>&copy; 2012 Jake Wharton &mdash; <a href="http://twitter.com/JakeWharton">@</a> / <a href="http://profiles.google.com/jakewharton">+</a></p>
@@ -218,8 +233,14 @@ MyTheme:
 		<script src="http://code.jquery.com/jquery-1.5.2.min.js"></script>
 		<script src="prettify.js"></script>
 		<script type="text/javascript">
+			var disqus_shortname = 'jakewharton-lessres';
+
 			$(function() {
 				prettyPrint();
+
+				var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+				dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+				(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
 			});
 		</script>
 	</body>
